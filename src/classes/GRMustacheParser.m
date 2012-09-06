@@ -424,7 +424,7 @@
         stateValid
     } state = stateInitial;
     BOOL canFilter = NO;
-    BOOL hasFilterSupport = [self.pragmas containsObject:@"FILTERS"];
+    BOOL hasFilterSupport = YES; // [self.pragmas containsObject:@"FILTERS"];
     NSUInteger identifierStart = NSNotFound;
     NSMutableArray *filterExpressionStack = [NSMutableArray array];
     id<GRMustacheExpression> currentExpression=nil;
