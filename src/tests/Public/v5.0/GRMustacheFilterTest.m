@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#define GRMUSTACHE_VERSION_MAX_ALLOWED GRMUSTACHE_VERSION_4_3
+#define GRMUSTACHE_VERSION_MAX_ALLOWED GRMUSTACHE_VERSION_5_0
 #import "GRMustachePublicAPITest.h"
 
 @interface GRMustacheFilterTestSupport: NSObject<GRMustacheFilter>
@@ -182,6 +182,18 @@
     NSString *templateString = @"{{%FILTERS}}{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}";
     NSString *rendering = [GRMustacheTemplate renderObject:data withFilters:filters fromString:templateString error:NULL];
     STAssertEqualObjects(rendering, @"<success instead of failure>", nil);
+}
+
+- (void)testFilterNameSpace
+{
+    id doubleFilter = [GRMustacheFilter filterWithBlock:^id(id value) {
+        return @(2 * [(NSNumber *)value doubleValue]);
+    }];
+    NSString *rendering = [GRMustacheTemplate renderObject:@(0.5)
+                                               withFilters:@{ @"math": @{ @"double": doubleFilter } }
+                                                fromString:@"{{%FILTERS}}{{ math.double(.) }}"
+                                                     error:NULL];
+    STAssertEqualObjects(rendering, @"1", nil);
 }
 
 @end

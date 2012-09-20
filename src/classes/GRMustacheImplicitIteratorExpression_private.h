@@ -23,15 +23,13 @@
 #import "GRMustacheExpression_private.h"
 
 /**
- * The GRMustacheImplicitIteratorExpression is able to return the value of the
- * top object of a context stack.
+ * The GRMustacheImplicitIteratorExpression is able to return the current
+ * context object of a runtime.
  *
+ * @see GRMustacheRuntime
  * @see GRMustacheExpression
  */
-@interface GRMustacheImplicitIteratorExpression : NSObject<GRMustacheExpression> {
-@private
-    GRMustacheToken *_debuggingToken;
-}
+@interface GRMustacheImplicitIteratorExpression : GRMustacheExpression
 
 /**
  * Returns an "implicit iterator" expression.
@@ -41,5 +39,5 @@
  *
  * @return A GRMustacheImplicitIteratorExpression.
  */
-+ (id)expression;
++ (id)expression GRMUSTACHE_API_INTERNAL;
 @end

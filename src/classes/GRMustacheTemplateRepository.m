@@ -23,7 +23,6 @@
 #import "GRMustacheTemplateRepository_private.h"
 #import "GRMustacheTemplate_private.h"
 #import "GRMustacheCompiler_private.h"
-#import "GRMustacheInvocation_private.h"
 #import "GRMustacheError.h"
 
 static NSString* const GRMustacheDefaultExtension = @"mustache";
@@ -31,8 +30,6 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
 
 // =============================================================================
 #pragma mark - Private concrete class GRMustacheTemplateRepositoryBaseURL
-
-#if !TARGET_OS_IPHONE || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 
 /**
  * Private subclass of GRMustacheTemplateRepository that is its own data source,
@@ -46,8 +43,6 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
 }
 - (id)initWithBaseURL:(NSURL *)baseURL templateExtension:(NSString *)templateExtension encoding:(NSStringEncoding)encoding;
 @end
-
-#endif /* if !TARGET_OS_IPHONE || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000 */
 
 
 // =============================================================================
@@ -102,7 +97,7 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
 // =============================================================================
 #pragma mark - GRMustacheTemplateRepository
 
-@interface GRMustacheTemplateRepository()<GRMustacheCompilerDataSource>
+@interface GRMustacheTemplateRepository()
 
 /**
  * Returns a template or a partial template, given its name.
@@ -131,12 +126,11 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
  * @see GRMustacheTemplateRepository
  */
 - (NSArray *)renderingElementsFromString:(NSString *)templateString templateID:(id)templateID error:(NSError **)outError;
+
 @end
 
 @implementation GRMustacheTemplateRepository
 @synthesize dataSource=_dataSource;
-
-#if !TARGET_OS_IPHONE || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 
 + (id)templateRepositoryWithBaseURL:(NSURL *)URL
 {
@@ -152,8 +146,6 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
 {
     return [[[GRMustacheTemplateRepositoryBaseURL alloc] initWithBaseURL:URL templateExtension:ext encoding:encoding] autorelease];
 }
-
-#endif /* if !TARGET_OS_IPHONE || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000 */
 
 + (id)templateRepositoryWithDirectory:(NSString *)path
 {
@@ -224,9 +216,7 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
     return [GRMustacheTemplate templateWithElements:renderingElements];
 }
 
-#pragma mark GRMustacheCompilerDataSource
-
-- (id<GRMustacheRenderingElement>)compiler:(GRMustacheCompiler *)compiler renderingElementForPartialName:(NSString *)name error:(NSError **)outError
+- (id<GRMustacheRenderingElement>)renderingElementForPartialName:(NSString *)name error:(NSError **)outError
 {
     return [self templateForName:name relativeToTemplateID:_currentlyParsedTemplateID error:outError];
 }
@@ -240,8 +230,8 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
         // Create a Mustache compiler
         GRMustacheCompiler *compiler = [[[GRMustacheCompiler alloc] init] autorelease];
         
-        // We tell the compiler where are the partials
-        compiler.dataSource = self;
+        // We tell the compiler where provide the partials
+        compiler.templateRepository = self;
         
         // Create a Mustache parser
         GRMustacheParser *parser = [[[GRMustacheParser alloc] init] autorelease];
@@ -329,8 +319,6 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
 // =============================================================================
 #pragma mark - Private concrete class GRMustacheTemplateRepositoryBaseURL
 
-#if !TARGET_OS_IPHONE || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
-
 @interface GRMustacheTemplateRepositoryBaseURL()<GRMustacheTemplateRepositoryDataSource>
 @end
 
@@ -379,8 +367,6 @@ static NSString* const GRMustacheDefaultExtension = @"mustache";
 }
 
 @end
-
-#endif /* if !TARGET_OS_IPHONE || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000 */
 
 
 // =============================================================================

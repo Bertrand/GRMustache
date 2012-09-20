@@ -23,7 +23,7 @@
 #import "GRMustacheAvailabilityMacros_private.h"
 #import "GRMustacheRenderingElement_private.h"
 
-@protocol GRMustacheExpression;
+@class GRMustacheExpression;
 
 /**
  * A GRMustacheVariableElement is a rendering element that renders variable
@@ -39,21 +39,20 @@
  */
 @interface GRMustacheVariableElement: NSObject<GRMustacheRenderingElement> {
 @private
-    id<GRMustacheExpression> _expression;
+    GRMustacheExpression *_expression;
     BOOL _raw;
 }
 
 /**
  * Builds and returns a GRMustacheVariableElement.
  *
- * @param expression  The expression that would evaluate against a context
- *                    stack.
+ * @param expression  The expression that would evaluate against a runtime.
  * @param raw         NO if the value should be rendered HTML-escaped.
  *
  * @return a GRMustacheVariableElement
  *
  * @see GRMustacheExpression
  */
-+ (id)variableElementWithExpression:(id<GRMustacheExpression>)expression raw:(BOOL)raw GRMUSTACHE_API_INTERNAL;
++ (id)variableElementWithExpression:(GRMustacheExpression *)expression raw:(BOOL)raw GRMUSTACHE_API_INTERNAL;
 
 @end

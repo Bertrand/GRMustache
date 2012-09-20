@@ -23,8 +23,7 @@
 #import <Foundation/Foundation.h>
 #import "GRMustacheAvailabilityMacros_private.h"
 
-@class GRMustacheContext;
-@class GRMustacheTemplate;
+@class GRMustacheRuntime;
 
 /**
  * The protocol for "rendering elements".
@@ -35,37 +34,31 @@
  * This syntax tree is made of objects conforming to the
  * GRMustacheRenderingElement.
  * 
- * Their responsability is to render the data provided by the library user. This
- * data is encapsulated into GRMustacheContext objects, which represent a
- * context stack that grows when entering a Mustache {{#section}}, and shrinks
- * when leaving that same {{/section}}.
+ * Their responsability is to render, provided with a Mustache runtime.
  * 
  * For instance, the template string "hello {{name}}!" would give four rendering
  * elements:
  *
  * - a GRMustacheTextElement that renders "hello ".
- * - a GRMustacheVariableElement that renders the `name` key in a context.
+ * - a GRMustacheVariableElement that renders the value of the `name` key in the
+ *   runtime.
  * - a GRMustacheTextElement that renders "!".
  * - a GRMustacheTemplate that would contain the three previous elements, and
  *   render the concatenation of their renderings.
  * 
  * @see GRMustacheCompiler
- * @see GRMustacheContext
+ * @see GRMustacheRuntime
  */
 @protocol GRMustacheRenderingElement<NSObject>
 @required
 
 /**
- * Renders.
+ * Appends the rendering of the receiver in a buffer.
  * 
- * @param renderingContext    A rendering context stack.
- * @param filterContext       A filters context stack.
- * @param delegatingTemplate  A template.
- * @param delegates           An array of GRMustacheTemplateDelegate objects
- *                            whose callbacks should be called whenever
- *                            relevant, with _delegatingTemplate_ as a template.
+ * @param buffer    A mutable string
+ * @param runtime   A runtime
  *
- * @return The rendering.
+ * @see GRMustacheRuntime
  */
-- (NSString *)renderRenderingContext:(GRMustacheContext *)renderingContext filterContext:(GRMustacheContext *)filterContext delegatingTemplate:(GRMustacheTemplate *)delegatingTemplate delegates:(NSArray *)delegates GRMUSTACHE_API_INTERNAL;
+- (void)renderInBuffer:(NSMutableString *)buffer withRuntime:(GRMustacheRuntime *)runtime GRMUSTACHE_API_INTERNAL;
 @end
